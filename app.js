@@ -10,6 +10,7 @@ const connectDB=require('./db/connect')
 //routers
 const authRouter=require('./routes/authRoute')
 const jobRouter=require('./routes/jobRoutes')
+const userRouter=require('./routes/userRoute')
 
 const notFoundMiddleware=require('./middleware/not-found')
 const errorHandlerMiddleware=require('./middleware/error-handler')
@@ -19,6 +20,7 @@ app.use(bodyParser.json())
 
 app.use("/api/v1/auth",authRouter)
 app.use('/api/v1/job',jobRouter)
+app.use('/api/v1/user',userRouter)
 
 
 app.use(notFoundMiddleware)
