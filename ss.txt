@@ -1,0 +1,7 @@
+we want to create a app where i am creating backend using node. In this app, we are creating a marketplace where a local body/concerned authority
+can post a job in the local area where the people of the realted location can go and work as per their interst due to which they will get reward
+point according to the work and days they have worked. and the reward points  can be used to do various government work for free.
+here admin and simple user can post job . if people do the work posted by admin they will get points but if they work for job provieded by user,
+they wont get points. here admin can post job, and the way to verifiy if the people have attented the work is by alerting the system if the 
+user get in the location of job posted. we want to track how much time the user in the job posted location.create an architecture so that it
+will be easy for us to create the app.

@@ -8,16 +8,17 @@ const JobSchema=new mongoose.Schema({
         type:String
     },
     date:{
-        type:Date
+        // type:Date
+        type:String
     },
     location:{
         type:String
     },
-    role:{
-       type:String,
-       enum:['admin','user'],
-       default:'user'
+    createdBy:{
+     type:mongoose.Types.ObjectId,
+     ref:'User'
     },
+   
     verified:{
         type:Boolean,
         default:false
