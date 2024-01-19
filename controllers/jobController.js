@@ -47,10 +47,54 @@ const createJob = async (req, res) => {
 
 
 const getAllJobs = async (req, res) => {
-  //sort near job
-  const jobs = await Job.find({});
-  res.status(StatusCodes.OK).json({ jobs });
+  try {
+    const jobs = await Job.find({});
+    const currentTime = new Date();
+
+    const categorizedJobs = [];
+
+    for (const job of jobs) {
+      const jobDate = new Date(job.date);
+      const timeDiff = jobDate - currentTime;
+
+      let remark;
+      let timeRemaining;
+
+      if (timeDiff > 0) {
+        remark = 'apply';
+        timeRemaining = calculateTimeRemaining(timeDiff);
+      } else if (timeDiff < 0) {
+        remark = 'expired';
+        timeRemaining = null; 
+      } 
+
+      categorizedJobs.push({
+        ...job.toObject(),
+        remark,
+        timeRemaining,
+      });
+    }
+
+    res.status(StatusCodes.OK).json({ categorizedJobs });
+  } catch (error) {
+    console.error(error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
+  }
 };
+
+const calculateTimeRemaining = (timeDiff) => {
+  const hoursRemaining = Math.floor(timeDiff / (1000 * 60 * 60));
+  const minutesRemaining = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+  const secondsRemaining = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+  return {
+    hours: hoursRemaining,
+    minutes: minutesRemaining,
+    seconds: secondsRemaining,
+  };
+};
+
+
 
 const deleteJob = async (req, res) => {
   res.send("delete");
