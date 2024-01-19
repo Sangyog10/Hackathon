@@ -11,7 +11,10 @@ const JobSchema=new mongoose.Schema({
         // type:Date
         type:String
     },
-    location:{
+    latitude:{
+        type:String
+    },
+    longitude:{
         type:String
     },
     createdBy:{
