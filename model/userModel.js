@@ -18,12 +18,21 @@ const UserSchema=new mongoose.Schema({
     },
     gender:{
         type:String,
-        enum:['Male','Female']
     },
     password:{
         type:String,
         required:[true,'Please enter password']
+    },
+    role:{
+        type:String,
+        enum:['admin','user'],
+        default:'user'
+    },
+    points:{
+        type:Number,
+        default:0
     }
+
 })
 
 UserSchema.pre("save", async function () {

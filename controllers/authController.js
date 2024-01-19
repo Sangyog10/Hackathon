@@ -26,7 +26,10 @@ const login=async(req,res)=>{
     if (!isPassword) {
       throw new CustomError.UnauthenticatedError("Invalid password");
     }
-    res.status(StatusCodes.CREATED).json({ user });
+    const name=user.name;
+    const role=user.role;
+    const userId=user._id;
+    res.status(StatusCodes.CREATED).json({ role, userId,name });
 }
 
 
