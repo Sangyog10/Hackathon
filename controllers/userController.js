@@ -5,8 +5,6 @@ const CustomError = require("../errors");
 const {validateMongodbId}=require('../middleware/validate-id')
 
 
-//for handling the location that user sends every 5 minutes and tells if the user is in the location or not
-// Assuming there's a User model with a 'zoneEntryTime' and 'totalTimeInZone' field
 
 const findUserInLocation = async (req, res) => {
     try {
@@ -82,6 +80,7 @@ function radians(degrees) {
 
 
   //for calculating the reward points if posted by admins
+  //offline intergration vayo vane change garnu
 const calculateRewardPoints=async(req,res)=>{
     const {userId,jobId}=req.body;
     validateMongodbId(userId);

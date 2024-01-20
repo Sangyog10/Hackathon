@@ -8,13 +8,15 @@ const JobSchema=new mongoose.Schema({
         type:String
     },
     date:{
-        // type:Date
         type:String
     },
     latitude:{
         type:String
     },
     longitude:{
+        type:String
+    },
+    location:{
         type:String
     },
     createdBy:{

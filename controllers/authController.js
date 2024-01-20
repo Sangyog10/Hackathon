@@ -27,7 +27,7 @@ const login=async(req,res)=>{
       throw new CustomError.UnauthenticatedError("Invalid password");
     }
     
-    res.status(StatusCodes.CREATED).json({ role:user.role, userId:user._id,name:user.name });
+    res.status(StatusCodes.CREATED).json({msg:"Logged in successfull", role:user.role, userId:user._id,name:user.name,points:user.points });
 }
 
 
