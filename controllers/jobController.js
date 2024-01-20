@@ -4,10 +4,10 @@ const { StatusCodes } = require("http-status-codes");
 const CustomError = require("../errors");
 
 const createJob = async (req, res) => {
-  const { title, description, date, location, userId } = req.body;
+  const { title, description, date, latitude,longitude, userId } = req.body;
 
   try {
-    if (!title || !description || !date || !location) {
+    if (!title || !description || !date || !latitude || !longitude) { 
       throw new CustomError.BadRequestError('Enter all credentials');
     }
 
@@ -23,7 +23,8 @@ const createJob = async (req, res) => {
         title,
         description,
         date,
-        location,
+        latitude,
+        longitude,
         verified: true,
         createdBy: userId, 
       };
@@ -32,7 +33,8 @@ const createJob = async (req, res) => {
         title,
         description,
         date,
-        location,
+        latitude,
+        longitude,
         createdBy: userId, 
       };
     }
@@ -61,12 +63,22 @@ const getAllJobs = async (req, res) => {
       let timeRemaining;
 
       if (timeDiff > 0) {
-        remark = 'apply';
+        const thirtyMinutesBefore = new Date(jobDate);
+        thirtyMinutesBefore.setMinutes(thirtyMinutesBefore.getMinutes() - 30);
+        const thirtyMinutesAfter = new Date(jobDate);
+        thirtyMinutesAfter.setMinutes(thirtyMinutesAfter.getMinutes() + 30);
+
+        if (currentTime >= thirtyMinutesBefore && currentTime <= thirtyMinutesAfter) {
+          remark = 'imIn'; 
+        } else {
+          remark = 'interested';
+        }
+
         timeRemaining = calculateTimeRemaining(timeDiff);
       } else if (timeDiff < 0) {
         remark = 'expired';
-        timeRemaining = null; 
-      } 
+        timeRemaining = null;
+      }
 
       categorizedJobs.push({
         ...job.toObject(),
@@ -81,6 +93,7 @@ const getAllJobs = async (req, res) => {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
   }
 };
+
 
 const calculateTimeRemaining = (timeDiff) => {
   const hoursRemaining = Math.floor(timeDiff / (1000 * 60 * 60));
