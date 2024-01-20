@@ -10,7 +10,8 @@ const userDetails = async (req, res) => {
   if (!user) {
     throw new CustomError.BadRequestError("User not found");
   }
-  res.status(StatusCodes.OK).json({name:user.name, number:user.number, address:user.address, points:user.points });
+  res.status(StatusCodes.OK).json({name:user.name, number:user.number, address:user.address, points:user.points, totalHoursWorked:user.totalTimeInZone });
+//   res.status(StatusCodes.OK).json({user});
 };
 
 
