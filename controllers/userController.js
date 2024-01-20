@@ -6,9 +6,11 @@ const {validateMongodbId}=require('../middleware/validate-id')
 
 
 //for handling the location that user sends every 5 minutes and tells if the user is in the location or not
-const findUserInLocation=async(req,res)=>{
+// Assuming there's a User model with a 'zoneEntryTime' and 'totalTimeInZone' field
+
+const findUserInLocation = async (req, res) => {
     try {
-        const { lat1, lon1, lat2, lon2, dist } = req.body; //jobid and userId from frontend
+        const { lat1, lon1, lat2, lon2, dist, userId } = req.body; 
         const parsedLat1 = parseFloat(lat1);
         const parsedLon1 = parseFloat(lon1);
         const parsedLat2 = parseFloat(lat2);
@@ -18,19 +20,45 @@ const findUserInLocation=async(req,res)=>{
         if (isNaN(parsedLat1) || isNaN(parsedLon1) || isNaN(parsedLat2) || isNaN(parsedLon2) || isNaN(parsedDist)) {
             throw new CustomError("Invalid input. Latitude, longitude, and distance must be valid numbers.", StatusCodes.BAD_REQUEST);
         }
-        result = is_within(parsedLat1, parsedLon1, parsedLat2, parsedLon2, parsedDist);
 
-        res.status(StatusCodes.OK).json({ result });
+        const isInZone = is_within(parsedLat1, parsedLon1, parsedLat2, parsedLon2, parsedDist);
 
+        const user = await User.findById(userId);
+
+        if (!user) {
+            throw new CustomError("User not found", StatusCodes.NOT_FOUND);
+        }
+
+        if (isInZone) {
+            if (!user.zoneEntryTime) {
+
+                user.zoneEntryTime = new Date(); //8.22
+            } else {
+                const currentTime = new Date(); //8.27
+                const timeSpentInZone = currentTime - user.zoneEntryTime;//5
+
+                user.totalTimeInZone = timeSpentInZone;
+
+
+            }
+        } else {
+            if (user.zoneEntryTime) {
+                const currentTime = new Date(); //8.27
+                const timeSpentInZone = currentTime - user.zoneEntryTime;//5
+                user.zoneEntryTime = null;
+            }
+        }
+        await user.save();
+
+        res.status(StatusCodes.OK).json({ total:user.totalTimeInZone });
     } catch (error) {
         console.error(error);
         res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
+};
 
-}
 
-//sudesh, yo function bata total time kati spend garyo vane nikala , yeuta xuttai function banau 
-//tesma total time spend tha hos ani tei total time anusar tala reward calculate garxu
+
 
 
 function haversine(lat1, lon1, lat2, lon2) {
@@ -69,11 +97,15 @@ const calculateRewardPoints=async(req,res)=>{
     const isPostedByAdmin=job.verified;
     if(isPostedByAdmin){
         console.log(user.points)
-        //increase reward points
-        res.status(StatusCodes.OK).json({msg:"Reward points added"})
+        const timeInMin=user.totalTimeInZone/(1000*60).toFixed(2);
+        user.points=(user.points+ timeInMin).toFixed(2);
+        user.totalTimeInZone = 0;
+        await user.save();
+        res.status(StatusCodes.OK).json({msg:"Reward points added", points: user.points})
     }else{
-        //dont increase reward point
-        res.status(StatusCodes.OK).json({msg:"Reward points not added"})
+        user.totalTimeInZone=0;
+        await user.save();
+        res.status(StatusCodes.OK).json({msg:"success",points:user.points})
     }
 
 }
